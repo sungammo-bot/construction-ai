@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PlanUploadForm } from "@/components/PlanUploadForm";
 import { ObservationRow } from "@/components/ObservationRow";
@@ -6,6 +6,11 @@ import type { PlanMilestone, Snapshot, Observation } from "@/lib/types";
 
 export default async function ProjectPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const { data: project } = await supabase
     .from("projects")
